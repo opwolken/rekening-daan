@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <h1 class="card-title">Categorie Specificeren</h1>
+
+    <!-- Dropdown voor categorie-selectie -->
+    <form method="GET" action="{{ url_for('specify') }}" class="mb-3">
+      <label for="category" class="form-label">Selecteer een categorie:</label>
+      <select name="category" id="category" class="form-select" onchange="this.form.submit()">
+        {% for category in categories %}
+        <option value="{{ category }}" {% if category == selected_category %}selected{% endif %}>
+          {{ category }}
+        </option>
+        {% endfor %}
+      </select>
+    </form>
+
+    <!-- Tabel met items van de geselecteerde categorie -->
+    {% if rows %}
+    <form method="POST">
+      <table class="table table-dark table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>Omschrijving</th>
+            <th>Nieuwe Subcategorie</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+          <tr>
+            <td>{{ row[0] }}</td>
+            <td>
+              <input
+                type="text"
+                class="form-control"
+                name="subcat_{{ row[0] }}"
+                value="{{ row[1] or '' }}"
+                placeholder="{{ row[1] or 'Nieuwe subcategorie...' }}"
+              />
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <button type="submit" class="btn btn-primary">Opslaan</button>
+    </form>
+    {% else %}
+    <p>Geen items gevonden in de geselecteerde categorie.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
