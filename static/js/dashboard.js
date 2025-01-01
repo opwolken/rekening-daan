@@ -265,8 +265,9 @@ new Chart(ctxCategorieenJaar, {
 });
 
 // 6. Saldi van de lopende rekening en de spaarrekening
-const lopendeRekeningSaldo = getJSONData("lopendeRekeningSaldo");
-const spaarrekeningSaldo = getJSONData("spaarrekeningSaldo");
+// Verwijder deze code omdat de saldi al in de HTML worden weergegeven
+// const lopendeRekeningSaldo = getJSONData("lopendeRekeningSaldo");
+// const spaarrekeningSaldo = getJSONData("spaarrekeningSaldo");
 
-document.getElementById("lopendeRekeningSaldo").textContent = formatCurrency(lopendeRekeningSaldo);
-document.getElementById("spaarrekeningSaldo").textContent = formatCurrency(spaarrekeningSaldo);
+// document.getElementById("lopendeRekeningSaldo").textContent = formatCurrency(lopendeRekeningSaldo);
+// document.getElementById("spaarrekeningSaldo").textContent = formatCurrency(spaarrekeningSaldo);
