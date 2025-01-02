@@ -18,6 +18,25 @@ def init_routes(app):
         top10_labels, top10_data = get_data_top10(DB_PATH)
         categorieen_jaar_labels, categorieen_jaar_datasets = get_categorieen_per_jaar(DB_PATH)
 
+        return render_template(
+            "dashboard.html",
+            uren_labels=uren_labels,
+            uren_data=uren_data,
+            spaartrend_labels=spaartrend_labels,
+            spaartrend_data=spaartrend_data,
+            spaartrend_avg_data=spaartrend_avg_data,
+            inkomen_labels=inkomen_labels,
+            inkomen_datasets=inkomen_datasets,
+            inkomen_avg_data=inkomen_avg_data,
+            top10_labels=top10_labels,
+            top10_data=top10_data,
+            categorieen_jaar_labels=categorieen_jaar_labels,
+            categorieen_jaar_datasets=categorieen_jaar_datasets,
+            inkomen_saldi=inkomen_saldi
+        )
+
+    @app.route('/specify', methods=['GET', 'POST'])
+    def specify():
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         cursor.execute("""
@@ -35,90 +54,90 @@ def init_routes(app):
         else:
             rows = []
 
-        cursor.execute("SELECT Omschrijving, Bedrag, Aantal, LaatsteDatum FROM categorieen WHERE Categorie IS NULL OR Categorie = '' ORDER BY Bedrag ASC, LaatsteDatum DESC, Aantal Desc LIMIT 10")
-        categorize_rows = cursor.fetchall()
-        cursor.execute("SELECT COUNT(*) FROM categorieen")
-        total_rows = cursor.fetchone()[0]
-        cursor.execute("SELECT COUNT(*) FROM categorieen WHERE Categorie IS NULL OR Categorie = ''")
-        uncategorized_rows = cursor.fetchone()[0]
-        cursor.execute("SELECT COUNT(*) FROM transacties")
-        total_trans_rows = cursor.fetchone()[0]
-        cursor.execute("SELECT COUNT(*) FROM transacties WHERE Categorie IS NULL OR Categorie = ''")
-        uncategorized_trans_rows = cursor.fetchone()[0]
-        conn.close()
+        if request.method == 'POST':
+            for key, value in request.form.items():
+                if key.startswith('subcat_'):
+                    omschrijving = key.replace('subcat_', '')
+                    subcategorie = value.strip()
+                    if subcategorie:
+                        cursor.execute("UPDATE categorieen SET Subcategorie = ? WHERE Omschrijving = ?", (subcategorie, omschrijving))
+                        cursor.execute("UPDATE transacties SET Subcategorie = ? WHERE Omschrijving = ?", (subcategorie, omschrijving))
+            conn.commit()
+            return redirect(url_for('specify', category=selected_category))
 
+        conn.close()
         return render_template(
-            "dashboard.html",
-            uren_labels=uren_labels,
-            uren_data=uren_data,
-            spaartrend_labels=spaartrend_labels,
-            spaartrend_data=spaartrend_data,
-            spaartrend_avg_data=spaartrend_avg_data,
-            inkomen_labels=inkomen_labels,
-            inkomen_datasets=inkomen_datasets,
-            inkomen_avg_data=inkomen_avg_data,
-            top10_labels=top10_labels,
-            top10_data=top10_data,
-            categorieen_jaar_labels=categorieen_jaar_labels,
-            categorieen_jaar_datasets=categorieen_jaar_datasets,
-            inkomen_saldi=inkomen_saldi,
+            "specify.html",
             categories=categories,
             selected_category=selected_category,
-            rows=rows,
-            categorize_rows=categorize_rows,
-            total_trans_rows=total_trans_rows,
-            uncategorized_trans_rows=uncategorized_trans_rows,
-            total_rows=total_rows,
-            uncategorized_rows=uncategorized_rows
+            rows=rows
         )
 
-    @app.route('/categorize', methods=['POST'])
+    @app.route('/categorize', methods=['GET', 'POST'])
     def categorize():
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
-        for key, value in request.form.items():
-            if key.startswith('cat_'):
-                omschrijving = key.replace('cat_', '')
-                nieuwe_categorie = value.strip()
-                if nieuwe_categorie:
-                    cursor.execute("UPDATE categorieen SET Categorie = ? WHERE Omschrijving = ?", (nieuwe_categorie, omschrijving))
-        conn.commit()
-        conn.close()
-        return redirect(url_for('index'))
+        cursor.execute("""
+            SELECT Omschrijving, Bedrag, Aantal, LaatsteDatum
+            FROM categorieen
+            WHERE Categorie IS NULL OR Categorie = ''
+            ORDER BY Bedrag ASC, LaatsteDatum DESC, Aantal DESC
+            LIMIT 10
+        """)
+        categorize_rows = cursor.fetchall()
 
-    @app.route('/categories', methods=['POST'])
-    def categories():
+        if request.method == 'POST':
+            for key, value in request.form.items():
+                if key.startswith('cat_'):
+                    omschrijving = key.replace('cat_', '')
+                    nieuwe_categorie = value.strip()
+                    if nieuwe_categorie:
+                        cursor.execute("UPDATE categorieen SET Categorie = ? WHERE Omschrijving = ?", (nieuwe_categorie, omschrijving))
+            conn.commit()
+            return redirect(url_for('categorize'))
+
+        conn.close()
+        return render_template(
+            "categorize.html",
+            categorize_rows=categorize_rows
+        )
+
+    @app.route('/manage_categories', methods=['GET', 'POST'])
+    def manage_categories():
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
-        for key, value in request.form.items():
-            if key.startswith('cat_'):
-                old_category = key.replace('cat_', '')
-                new_category = value.strip()
-                if new_category:
-                    cursor.execute("UPDATE categorieen SET Categorie = ? WHERE Categorie = ?", (new_category, old_category))
-        conn.commit()
-        conn.close()
-        return redirect(url_for('index'))
+        cursor.execute("""
+            SELECT Categorie, COUNT(*)
+            FROM categorieen
+            WHERE Categorie IS NOT NULL AND Categorie != ''
+            GROUP BY Categorie
+            ORDER BY COUNT(*) DESC
+        """)
+        categories = cursor.fetchall()
 
-    @app.route('/specify', methods=['POST'])
-    def specify():
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.cursor()
-        for key, value in request.form.items():
-            if key.startswith('subcat_'):
-                omschrijving = key.replace('subcat_', '')
-                subcategorie = value.strip()
-                if subcategorie:
-                    cursor.execute("UPDATE categorieen SET Subcategorie = ? WHERE Omschrijving = ?", (subcategorie, omschrijving))
-                    cursor.execute("UPDATE transacties SET Subcategorie = ? WHERE Omschrijving = ?", (subcategorie, omschrijving))
-        conn.commit()
-        conn.close()
-        return redirect(url_for('index'))
+        if request.method == 'POST':
+            for key, value in request.form.items():
+                if key.startswith('cat_'):
+                    old_category = key.replace('cat_', '')
+                    new_category = value.strip()
+                    if new_category:
+                        cursor.execute("UPDATE categorieen SET Categorie = ? WHERE Categorie = ?", (new_category, old_category))
+            conn.commit()
+            conn.close()
+            return redirect(url_for('manage_categories'))
 
-    @app.route('/update_transactions', methods=['POST'])
+        conn.close()
+        return render_template(
+            "manage_categories.html",
+            categories=categories
+        )
+
+    @app.route('/update_transactions', methods=['GET', 'POST'])
     def update_transactions():
-        update_all_transactions(DB_PATH)
-        return redirect(url_for('index'))
+        if request.method == 'POST':
+            update_all_transactions(DB_PATH)
+            return redirect(url_for('index'))
+        return render_template("update_transactions.html")
 
     @app.route("/get_monthly_inkomen_data")
     def get_monthly_inkomen_data():

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Categoriseren</title>
+    <!-- Google Fonts: Inter en Rehinkt Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Rehinkt+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <div class="container mt-4">
+      <div class="card">
+        <div class="card-body">
+          <h1 class="card-title">Categoriseren</h1>
+          <form method="POST" action="{{ url_for('categorize') }}">
+            <table class="table table-dark table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th>Omschrijving</th>
+                  <th>Bedrag</th>
+                  <th>Aantal</th>
+                  <th>Laatse datum</th>
+                  <th>Nieuwe Categorie</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in categorize_rows %}
+                <tr>
+                  <td>{{ row[0] }}</td>
+                  <td>{{ row[1] }}</td>
+                  <td>{{ row[2] }}</td>
+                  <td>{{ row[3] }}</td>
+                  <td>
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="cat_{{ row[0] }}"
+                      placeholder="bijv. Boodschappen"
+                    />
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <button type="submit" class="btn">Opslaan</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+{% endblock %}

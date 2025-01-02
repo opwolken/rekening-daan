@@ -7,6 +7,29 @@ function formatCurrency(value) {
     return new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(value);
 }
 
+function getCSSVariableValue(variable) {
+    return getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
+}
+
+const accentColor = getCSSVariableValue('--accent');
+const redColor = getCSSVariableValue('--red');
+const orangeColor = getCSSVariableValue('--orange');
+const blueColor = getCSSVariableValue('--blue');
+const purpleColor = getCSSVariableValue('--purple');
+
+function generateColorVariants(baseColor, count) {
+    const colorVariants = [];
+    const color = baseColor.match(/\d+/g).map(Number);
+    for (let i = 0; i < count; i++) {
+        const factor = 1 - (i / count) * 0.5;
+        colorVariants.push(`rgba(${color[0] * factor}, ${color[1] * factor}, ${color[2] * factor}, 0.6)`);
+    }
+    return colorVariants;
+}
+
+const baseColors = [accentColor, redColor, orangeColor, blueColor, purpleColor];
+const colorVariants = baseColors.flatMap(color => generateColorVariants(color, 5));
+
 // 1. Uren-van-de-dag (bar chart)
 const urenLabels = getJSONData("urenLabels");
 const urenData = getJSONData("urenData");
@@ -18,7 +41,7 @@ new Chart(ctxUren, {
         datasets: [{
             label: "Uitgaven per uur",
             data: urenData,
-            backgroundColor: "#007aff"
+            backgroundColor: accentColor
         }]
     },
     options: {
@@ -51,14 +74,14 @@ new Chart(ctxSpaar, {
         datasets: [{
             label: "Cumulatief Sparen",
             data: spaartrendData,
-            borderColor: "#34c759",
+            borderColor: accentColor,
             backgroundColor: "rgba(52,199,89,0.2)",
             fill: true,
             tension: 0.1
         }, {
             label: "3-maands Gemiddelde",
             data: spaartrendAvgData,
-            borderColor: "#ff2d55",
+            borderColor: redColor,
             backgroundColor: "rgba(255,45,85,0.2)",
             fill: true,
             tension: 0.1
@@ -98,7 +121,7 @@ const inkomenChart = new Chart(ctxInkomen, {
                 label: "12-maanden Gemiddelde",
                 data: inkomenAvgData,
                 type: "line",
-                borderColor: "#ff2d55",
+                borderColor: redColor,
                 backgroundColor: "rgba(255,45,85,0.2)",
                 fill: false,
                 tension: 0.1
@@ -167,7 +190,7 @@ function updateInkomenChart(isYearly) {
                     label: "12-maanden Gemiddelde",
                     data: data.avg_data,
                     type: "line",
-                    borderColor: "#ff2d55",
+                    borderColor: redColor,
                     backgroundColor: "rgba(255,45,85,0.2)",
                     fill: false,
                     tension: 0.1
@@ -188,7 +211,7 @@ new Chart(ctxTop10, {
         datasets: [{
             label: "Uitgaven (EUR)",
             data: top10Data,
-            backgroundColor: "#ff2d55"
+            backgroundColor: redColor
         }]
     },
     options: {
@@ -218,7 +241,10 @@ new Chart(ctxCategorieenJaar, {
     type: "bar",
     data: {
         labels: categorieenJaarLabels,
-        datasets: categorieenJaarDatasets
+        datasets: categorieenJaarDatasets.map((dataset, index) => ({
+            ...dataset,
+            backgroundColor: colorVariants[index % colorVariants.length]
+        }))
     },
     options: {
         responsive: true,

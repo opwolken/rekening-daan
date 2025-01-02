@@ -2,31 +2,38 @@
 
 /* 1. CSS-variabelen */
 :root {
-  --background: #1c1c1c;
-  --foreground: #f4f4f4;
-  --accent: #007aff;
-  --accent-hover: #008fff;
-  --card-bg: #2c2c2e;
-  --input-bg: rgba(255, 255, 255, 0.2);
-  --placeholder: #b3b3b3;
-  --placeholder-focus: #ffffff;
-  --border-color: rgba(255, 255, 255, 0.3);
+  --background:     rgb(28, 28, 28);
+  --foreground:     rgb(245, 245, 245);
+  --accent:         rgb(112, 255, 195);
+  --accent-hover:   rgb(164, 244, 211);
+  --red:            rgb(253, 29, 29);
+  --orange:         rgb(252, 176, 69);
+  --blue:           rgb(58, 134, 255);
+  --purple:         rgb(131, 58, 180);
+  --card-bg:        rgb(31, 31, 30);
+  --input-bg:       rgb(41, 41, 41);
+  --input-bg-focus: rgb(51, 51, 51);
+  --placeholder:    rgb(205, 205, 205);
+  --placeholder-focus: rgb(212, 212, 212);
+  --border-color:   rgba(31, 31, 30, 0.7);
   --border-radius: 8px;
   --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   --transition-speed: 0.2s;
+  --font-family-body: 'Inter', sans-serif;
+  --font-family-heading: 'Rehinkt Sans', sans-serif;
 }
 
 /* 2. Basisreset en dark theme */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-family-body);
   margin: 0;
   padding: 0;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Rehinkt Sans', sans-serif;
+  font-family: var(--font-family-heading);
   color: var(--foreground);
 }
 
@@ -42,12 +49,12 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
   padding: 1.5rem;
-  border: 1px solid var(--border-color);
+  border: 3px solid var(--border-color);
   transition: transform var(--transition-speed), box-shadow var(--transition-speed);
 }
 
 .card:hover {
-  transform: scale(1.02);
+  /* transform: scale(1.02); */
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
@@ -61,17 +68,17 @@ select {
   background: var(--input-bg);
   border-radius: var(--border-radius);
   color: var(--foreground);
-  border: 1px solid var(--border-color);
   outline: none;
-  transition: border-color var(--transition-speed), background-color var(--transition-speed);
+  transition: background-color var(--transition-speed);
 }
 
 input[type="text"]:focus,
 input[type="password"]:focus,
 textarea:focus,
 select:focus {
-  background-color: rgba(255, 255, 255, 0.8);
-  border-color: var(--accent);
+  background-color: var(--input-bg-focus);
+  border-image: linear-gradient(to right, rgba(0, 0, 0, 0), var(--red), var(--orange), var(--accent), var(--blue), var(--purple), rgba(0, 0, 0, 0)) 1 !important;
+  border-image-slice: 1;
 }
 
 ::placeholder {
@@ -118,7 +125,6 @@ textarea:focus::placeholder {
 .glow-effect {
   position: relative;
   z-index: 0;
-  overflow: hidden;
   border-radius: var(--border-radius);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
@@ -166,4 +172,64 @@ fieldset {
   border-radius: var(--border-radius);
   padding: 1rem;
   background: var(--card-bg);
+}
+
+/* 9. Flexbox layout */
+.flex-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.flex-item {
+  flex: 1 1 calc(33.333% - 1rem);
+}
+
+@media (max-width: 992px) {
+  .flex-item {
+    flex: 1 1 calc(50% - 1rem);
+  }
+}
+
+@media (max-width: 768px) {
+  .flex-item {
+    flex: 1 1 calc(100% - 1rem);
+  }
+}
+
+/* 10. Navigation bar */
+.navbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 3rem auto;
+  width: fit-content;
+  background: var(--background);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.navbar-nav {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background: var(--background);
+  border-radius: var(--border-radius);
+  line-height: 3rem;
+  font-family: var(--font-family-heading);
+}
+
+.nav-item {
+  margin: 0 1rem;
+}
+
+.nav-link {
+  color: var(--foreground);
+  text-decoration: none;
+}
+
+.nav-link.active {
+  font-weight: bold;
+  text-decoration: underline;
 }
