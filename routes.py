@@ -3,7 +3,7 @@ print("Loading my_routes.py...")
 from flask import render_template, request, redirect, url_for, jsonify
 import sqlite3
 from categorielogic import update_all_transactions
-from charts import get_data_uren_van_dag, get_data_spaartrend, get_data_inkomen, get_data_top10, get_yearly_inkomen, get_categorieen_per_jaar
+from charts import get_data_uren_van_dag, get_data_spaartrend, get_data_inkomen, get_data_top10, get_yearly_inkomen, get_categorieen_per_jaar, get_sankey_data
 
 DB_PATH = "transacties.db"  # Pas aan als jouw db anders heet
 
@@ -17,6 +17,7 @@ def init_routes(app):
         inkomen_labels, inkomen_datasets, inkomen_avg_data, inkomen_saldi = get_data_inkomen(DB_PATH)
         top10_labels, top10_data = get_data_top10(DB_PATH)
         categorieen_jaar_labels, categorieen_jaar_datasets = get_categorieen_per_jaar(DB_PATH)
+        sankey_data = get_sankey_data(DB_PATH)
 
         return render_template(
             "dashboard.html",
@@ -32,6 +33,7 @@ def init_routes(app):
             top10_data=top10_data,
             categorieen_jaar_labels=categorieen_jaar_labels,
             categorieen_jaar_datasets=categorieen_jaar_datasets,
+            sankey_data=sankey_data,
             inkomen_saldi=inkomen_saldi
         )
 

@@ -1,88 +1,82 @@
 {% extends "base.html" %}
 {% block content %}
-<!DOCTYPE html>
-<html lang="nl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mijn BI Dashboard</title>
-    <!-- Google Fonts: Inter en Rehinkt Sans -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Rehinkt+Sans:wght@400;600&display=swap" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  </head>
-  <body>
-    <div class="container mt-4 mb-3">
-      <div class="card">
-        <div class="card-body">
-          <h1 class="card-title">Mijn BI Dashboard</h1>
-          <p>Een overzicht van grafieken en tools uit mijn transacties.</p>
-        </div>
-      </div>
-
-      <div class="flex-container">
-        <!-- 1. Uren van de dag -->
-        <div class="card flex-item">
-          <div class="card-body">
-            <h2 class="card-title">Uren van de dag</h2>
-            <canvas id="urenChart"></canvas>
-          </div>
-        </div>
-
-        <!-- 2. Spaartrend -->
-        <div class="card flex-item">
-          <div class="card-body">
-            <h2 class="card-title">Sparen</h2>
-            <canvas id="spaartrendChart"></canvas>
-          </div>
-        </div>
-
-        <!-- 3. Inkomentrend -->
-        <div class="card flex-item">
-          <div class="card-body">
-            <h2 class="card-title">Inkomen</h2>
-            <button id="togglePeriod" class="btn mb-3">Toon Jaaroverzicht</button>
-            <canvas id="inkomenChart"></canvas>
-            <p>Lopende rekening saldo: <span id="lopendeRekeningSaldo"></span></p>
-            <p>Spaarrekening saldo: <span id="spaarrekeningSaldo"></span></p>
-          </div>
-        </div>
-
-        <!-- 4. Top 10 Omschrijvingen -->
-        <div class="card flex-item">
-          <div class="card-body">
-            <h2 class="card-title">Top 10 Omschrijvingen</h2>
-            <canvas id="top10Chart"></canvas>
-          </div>
-        </div>
-
-        <!-- 5. Categorieën per jaar -->
-        <div class="card flex-item">
-          <div class="card-body">
-            <h2 class="card-title">Categorieën per jaar</h2>
-            <canvas id="categorieenJaarChart"></canvas>
-          </div>
-        </div>
-      </div>
-
-      <!-- Data in JSON-tags -->
-      <script type="application/json" id="urenLabels">{{ uren_labels|tojson }}</script>
-      <script type="application/json" id="urenData">{{ uren_data|tojson }}</script>
-      <script type="application/json" id="spaartrendLabels">{{ spaartrend_labels|tojson }}</script>
-      <script type="application/json" id="spaartrendData">{{ spaartrend_data|tojson }}</script>
-      <script type="application/json" id="spaartrendAvgData">{{ spaartrend_avg_data|tojson }}</script>
-      <script type="application/json" id="inkomenLabels">{{ inkomen_labels|tojson }}</script>
-      <script type="application/json" id="inkomenDatasets">{{ inkomen_datasets|tojson }}</script>
-      <script type="application/json" id="inkomenAvgData">{{ inkomen_avg_data|tojson }}</script>
-      <script type="application/json" id="top10Labels">{{ top10_labels|tojson }}</script>
-      <script type="application/json" id="top10Data">{{ top10_data|tojson }}</script>
-      <script type="application/json" id="categorieenJaarLabels">{{ categorieen_jaar_labels|tojson }}</script>
-      <script type="application/json" id="categorieenJaarDatasets">{{ categorieen_jaar_datasets|tojson }}</script>
-
-      <!-- Chart.js en jouw eigen JS-file (dashboard.js) -->
-      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-      <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<div class="container dashboard mt-4">
+    
+  <!-- Heading -->
+  <div class="card">
+    <div class="card-body">
+      <h1 class="card-title">Mijn BI Dashboard</h1>
+      <p>Een overzicht van grafieken en tools uit mijn transacties.</p>
     </div>
-  </body>
-</html>
+  </div>
+
+  <!-- 1. Uren van de dag -->
+  <div class="card">
+    <div class="card-body">
+      <h2 class="card-title">Uren van de dag</h2>
+      <div id="urenChart" class="chart-container"></div>
+    </div>
+  </div>
+
+  <!-- 2. Spaartrend -->
+  <div class="card">
+    <div class="card-body">
+      <h2 class="card-title">Sparen</h2>
+      <div id="spaartrendChart" class="chart-container"></div>
+    </div>
+  </div>
+
+  <!-- 3. Inkomentrend -->
+  <div class="card">
+    <div class="card-body">
+      <h2 class="card-title">Inkomen</h2>
+      <button id="togglePeriod" class="btn mb-3">Toon Jaaroverzicht</button>
+      <div id="inkomenChart" class="chart-container"></div>
+    </div>
+  </div>
+
+  <!-- 4. Top 10 Omschrijvingen -->
+  <div class="card">
+    <div class="card-body">
+      <h2 class="card-title">Top 10 Omschrijvingen</h2>
+      <div id="top10Chart" class="chart-container"></div>
+    </div>
+  </div>
+
+  <!-- 5. Categorieën per jaar -->
+  <div class="card">
+    <div class="card-body">
+      <h2 class="card-title">Categorieën per jaar</h2>
+      <div id="categorieenJaarChart" class="chart-container"></div>
+    </div>
+  </div>
+
+  <!-- 6. Sankey Chart -->
+  <div class="card">
+    <div class="card-body">
+      <h2 class="card-title">Inkomen en Uitgaven Sankey Chart 2024</h2>
+      <div id="sankeyChart" class="chart-container"></div>
+    </div>
+  </div>
+
+  <!-- Data in JSON-tags -->
+  <script type="application/json" id="urenLabels">{{ uren_labels|tojson }}</script>
+  <script type="application/json" id="urenData">{{ uren_data|tojson }}</script>
+  <script type="application/json" id="spaartrendLabels">{{ spaartrend_labels|tojson }}</script>
+  <script type="application/json" id="spaartrendData">{{ spaartrend_data|tojson }}</script>
+  <script type="application/json" id="spaartrendAvgData">{{ spaartrend_avg_data|tojson }}</script>
+  <script type="application/json" id="inkomenLabels">{{ inkomen_labels|tojson }}</script>
+  <script type="application/json" id="inkomenDatasets">{{ inkomen_datasets|tojson }}</script>
+  <script type="application/json" id="inkomenAvgData">{{ inkomen_avg_data|tojson }}</script>
+  <script type="application/json" id="top10Labels">{{ top10_labels|tojson }}</script>
+  <script type="application/json" id="top10Data">{{ top10_data|tojson }}</script>
+  <script type="application/json" id="categorieenJaarLabels">{{ categorieen_jaar_labels|tojson }}</script>
+  <script type="application/json" id="categorieenJaarDatasets">{{ categorieen_jaar_datasets|tojson }}</script>
+  <script type="application/json" id="sankeyData">{{ sankey_data|tojson }}</script>
+
+  <!-- Highcharts en jouw eigen JS-file (dashboard.js) -->
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/sankey.js"></script>
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</div>
 {% endblock %}

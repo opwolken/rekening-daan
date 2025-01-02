@@ -225,3 +225,23 @@ def get_categorieen_per_jaar(db_path):
         })
 
     return labels, datasets
+
+def get_sankey_data(db_path):
+    """
+    Haal de data voor de Sankey chart van 2024.
+    Retourneert een lijst van tuples (from, to, weight).
+    """
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT 'Inkomen', Categorie, SUM(Bedrag)
+        FROM transacties
+        WHERE strftime('%Y', Datum) = '2024' AND Categorie != 'Inkomen'
+        GROUP BY Categorie
+    """)
+    rows = cursor.fetchall()
+    conn.close()
+
+    data = [(row[0], row[1], abs(row[2])) for row in rows if row[1]]  # Filter out None values
+    print("Sankey Data:", data)  # Debug logging
+    return data

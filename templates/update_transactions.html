@@ -1,27 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
-<!DOCTYPE html>
-<html lang="nl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Transacties bijwerken</title>
-    <!-- Google Fonts: Inter en Rehinkt Sans -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Rehinkt+Sans:wght@400;600&display=swap" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  </head>
-  <body>
-    <div class="container mt-4">
-      <div class="card">
-        <div class="card-body">
-          <h1 class="card-title">Transacties bijwerken</h1>
-          <form method="POST" action="{{ url_for('update_transactions') }}">
-            <button type="submit" class="btn">Nu bijwerken</button>
-          </form>
-        </div>
-      </div>
+<div class="container mt-4">
+  <div class="card">
+    <div class="card-body">
+      <h1 class="card-title">Transacties bijwerken</h1>
+      <form method="POST" action="{{ url_for('update_transactions') }}">
+        <button type="submit" class="btn">Nu bijwerken</button>
+      </form>
     </div>
-  </body>
-</html>
+  </div>
+</div>
 {% endblock %}
